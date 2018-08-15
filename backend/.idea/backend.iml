@@ -8,5 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="easeljs-0.8.2" level="application" />
+    <orderEntry type="library" name="tweenjs-0.6.2" level="application" />
   </component>
 </module>
