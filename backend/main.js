@@ -8,6 +8,8 @@ let simulationStart = null;
 let currentTime = null;
 let packages = null;
 let packagesTween = null;
+let soundLevel = 0;
+let soundTime = null;
 
 (function () {
     window.addEventListener("load", main);
@@ -15,6 +17,7 @@ let packagesTween = null;
 
 function main(){
     simulationStart = createjs.Ticker.getTime(true);
+    soundTime = createjs.Ticker.getTime(true);
     stage = new createjs.Stage("simulator");
     stage.enableMouseOver();
     createjs.Ticker.setFPS(60);
@@ -62,6 +65,22 @@ function calculateCollision(){
             circles[index].alpha = 0.2;
         }
     }
+}
+
+function calculateSoundLevel(){
+    let allDown = true;
+    let sound = 0;
+    for(let index = 0; index < circles.length; ++index) {
+        let pt = boat.localToLocal(100, 0, circles[index]);
+        if (circles[index].hitTest(pt.x, pt.y)) {
+            allDown = false;
+            sound += Math.sqrt(((buoys[index].y - boat.y) << 2) + ((buoys[index].x - boat.x) << 2));
+        }
+    }
+    if(allDown){
+        sound = 0;
+    }
+    return sound;
 }
 
 function createPackage(x, y){
@@ -127,7 +146,7 @@ function moveBitmaps(destinationX, destinationY, bitmap, time, loop){
 function tick(event) {
     currentTime = createjs.Ticker.getTime(true);
     if(currentTime - simulationStart <= 11000){
-        calculateCollision(boat, circles);
+        calculateCollision();
         stage.update(event);
     }else{
         boat.x = -100;
@@ -135,5 +154,9 @@ function tick(event) {
         simulationStart = createjs.Ticker.getTime(true);
         moveBitmaps(500, -100, boat, 10000, false);
     }
-
+    if(currentTime - soundTime >= 1000){
+        soundTime = currentTime;
+        soundLevel = calculateSoundLevel();
+        console.log(soundLevel);
+    }
 }
